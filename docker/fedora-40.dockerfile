@@ -28,12 +28,13 @@ RUN <<_DEPS
 #!/bin/bash
 set -e
 dnf -y update
+dnf -y install dnf-plugins-core
 dnf -y config-manager --add-repo=https://negativo17.org/repos/fedora-nvidia.repo
 dnf -y group install "Development Tools"
 dnf -y install \
   cmake-3.28.* \
   doxygen \
-  cuda-gcc-c++ \
+  cuda-gcc-c++-12.3* \
   gcc-14.1.* \
   gcc-c++-14.1.* \
   git \
@@ -79,9 +80,11 @@ ENV NVCC_PREPEND_FLAGS="-ccbin /usr/bin/cuda"
 ## hadolint ignore=SC3010
 RUN <<_INSTALL_CUDA
 #!/bin/bash
+
 set -e
 cuda_prefix="https://developer.download.nvidia.com/compute/cuda/"
 cuda_suffix=""
+
 if [[ "${TARGETPLATFORM}" == 'linux/arm64' ]]; then
   cuda_suffix="_sbsa"
 
@@ -92,6 +95,7 @@ if [[ "${TARGETPLATFORM}" == 'linux/arm64' ]]; then
   sed -i 's/__SVFloat64_t/float/g' /usr/include/bits/math-vector.h
   sed -i 's/__SVBool_t/int/g' /usr/include/bits/math-vector.h
 fi
+
 url="${cuda_prefix}${CUDA_VERSION}/local_installers/cuda_${CUDA_VERSION}_${CUDA_BUILD}_linux${cuda_suffix}.run"
 echo "cuda url: ${url}"
 wget "$url" --progress=bar:force:noscroll -q --show-progress -O ./cuda.run
