@@ -64,7 +64,7 @@ dnf -y install \
   pulseaudio-libs-devel \
   python3.11 \
   rpm-build \
-  wget \
+  curl \
   which \
   xorg-x11-server-Xvfb
 dnf clean all
@@ -98,7 +98,7 @@ fi
 
 url="${cuda_prefix}${CUDA_VERSION}/local_installers/cuda_${CUDA_VERSION}_${CUDA_BUILD}_linux${cuda_suffix}.run"
 echo "cuda url: ${url}"
-wget "$url" --progress=bar:force:noscroll -q --show-progress -O ./cuda.run
+curl -Lo "./cuda.run" "$url"
 chmod a+x ./cuda.run
 ./cuda.run --silent --toolkit --toolkitpath=/build/cuda --no-opengl-libs --no-man-page --no-drm
 rm ./cuda.run
